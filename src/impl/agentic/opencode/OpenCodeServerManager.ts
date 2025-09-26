@@ -1,4 +1,5 @@
 import SFPLogger, { Logger, LoggerLevel } from '@flxbl-io/sfp-logger';
+import { OpencodeCliChecker } from '../../../core/utils/OpencodeCliChecker';
 
 // Default OpenCode server configuration
 const DEFAULT_OPENCODE_HOST = '127.0.0.1';
@@ -18,6 +19,11 @@ export class OpenCodeServerManager {
 
     async start(): Promise<OpencodeClient> {
         try {
+            // Check if OpenCode CLI is installed before attempting to start server
+            if (!OpencodeCliChecker.checkAndWarn('OpenCode server', this.logger)) {
+                throw new Error('OpenCode CLI is not installed. Please install it to use AI features.');
+            }
+
             SFPLogger.log('🚀 Starting OpenCode server...', LoggerLevel.DEBUG, this.logger);
 
             // Dynamic import for ESM module

@@ -28,24 +28,6 @@ export const AUTH_PROVIDERS: Record<string, AuthProvider> = {
         env: [],
         plugin: 'copilot',
         requiresAuth: true
-    },
-    openai: {
-        id: 'openai',
-        name: 'OpenAI',
-        env: ['OPENAI_API_KEY'],
-        requiresAuth: true
-    },
-    google: {
-        id: 'google',
-        name: 'Google (Gemini)',
-        env: ['GOOGLE_API_KEY', 'GOOGLE_GENERATIVE_AI_API_KEY'],
-        requiresAuth: true
-    },
-    'amazon-bedrock': {
-        id: 'amazon-bedrock',
-        name: 'Amazon Bedrock',
-        env: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'],
-        requiresAuth: false
     }
 };
 

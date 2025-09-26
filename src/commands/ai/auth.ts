@@ -7,6 +7,7 @@ import { AUTH_PROVIDERS } from '../../impl/agentic/opencode/auth/AuthManager';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as os from 'os';
+import { OpencodeCliChecker } from '../../core/utils/OpencodeCliChecker';
 const chalk = require('chalk');
 const inquirer = require('inquirer').default;
 
@@ -196,10 +197,7 @@ export default class AIAuth extends SfpCommand {
     private getProviderIcon(providerId: string): string {
         const icons: Record<string, string> = {
             'anthropic': '🤖',
-            'github-copilot': '🐙',
-            'openai': '🧠',
-            'google': '🔍',
-            'amazon-bedrock': '☁️',
+            'github-copilot': '🐙'
         };
         return icons[providerId] || '📦';
     }
@@ -242,6 +240,13 @@ export default class AIAuth extends SfpCommand {
 
     private async performOAuthAuthentication(providerId: string, provider: any): Promise<void> {
         console.log('\n' + chalk.yellow('Starting OAuth authentication...'));
+
+        // Check if OpenCode CLI is installed before attempting OAuth
+        if (!OpencodeCliChecker.checkAndWarn('OAuth authentication')) {
+            console.log(chalk.yellow('\nFalling back to API key authentication...'));
+            await this.promptForApiKey(providerId, provider);
+            return;
+        }
 
         // Start OpenCode server for OAuth flow
         let server: any;
