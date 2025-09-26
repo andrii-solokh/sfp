@@ -1,0 +1,4 @@
+{
+  "commandDescription": "AI-powered analysis of Salesforce packages",
+  "commandDescriptionLong": "Analyze Salesforce packages using AI to generate comprehensive reports on code quality, dependencies, and architecture. Repository-wide and domain analysis are available in sfp-pro edition."
+}

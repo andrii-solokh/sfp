@@ -1,0 +1,118 @@
+name: "Package Type Review"
+order: 4
+content: |
+  IMPORTANT FORMATTING RULES:
+  - Start with ### (h3) for your main section headers, not # (h1) or ## (h2)
+  - Use #### (h4) for subsections
+  - Do NOT include introductory phrases like "Based on my analysis..." or "I can now provide..."
+  - Start directly with the content without preamble
+  - Be direct and professional in tone
+  - The report is  an additional part of the previous report that is provided to you. Do not repeat any information that has already been provided in the previous report. Focus only on the architectural analysis and insights.
+
+  DO NOT provide effort esitmation , just focus on the analysis and findings.  Do not proivide investment justification
+  or talk about investments or RoI in this report. Do not refer to Resource Requiremnts etc.. Keep it concise
+
+
+  Based on this being a {{packageType}} package, analyze the following:
+
+  - If this is an unlocked package: Review versioning strategy, dependencies, and whether it's org-dependent
+  - If this is a source package: Identify metadata for potential migration to unlocked packages and deployment approach
+  - If this is a data package: Identify data types, loading patterns, and data governance
+  - If this is a diff package: Understand differential deployment purposes and change management
+
+  Current version: {{versionNumber}}
+  Dependencies count: {{dependencyCount}} 
+
+  ## Package-Type Specific Recommendations
+  Focus ONLY on recommendations related to the package type and deployability:
+  - deployability, package boundaries, dependency management, environment-specific configurations, and package type migration strategies.
+  - For unlocked packages: Version management, dependency optimization, org-dependent vs independent tradeoffs
+  - For source packages: Migration readiness to unlocked, aliasification opportunities, destructive change management
+  - For data packages: Data loading optimization, SFDMU configuration improvements
+  - For diff packages: Migration path to source/unlocked packages
+
+  DO NOT include generic recommendations like:
+  - Performance optimization (unless it affects deployment)
+  - Code refactoring (unless it affects package boundaries)
+  - Test coverage (unless it affects package installation)
+
+
+  Provide specific, actionable recommendations with examples.
+
+  ## Context Information for Your Analysis
+
+  When analyzing source packages, consider these key characteristics:
+
+  ### Source Packages Overview
+  Source Packages are metadata deployments that are groups of components deployed as a unit. Unlike Unlocked packages (which have versioning, component locking, and automated dependency validation), source packages provide more flexibility at the cost of some safety guarantees.
+
+  ### When Source Packages Excel
+  - Application Configuration: Configuring managed packages (changes to help text, field descriptions)
+  - Org-Specific Metadata: Global components (queues, profiles, permission sets, custom settings)
+  - Environment-Specific Configuration: Components that vary across environments
+  - Composite UI Layouts: Complex UI configurations that don't package well
+  - Rapid Development: When iteration speed is more important than package versioning
+  - Large Monolithic Applications: When breaking into unlocked packages is not feasible
+  - Starting Package Development: Teams beginning their package-based development journey
+
+  ### Source Package Advantages
+  - Deployment Speed: Significantly faster deployment times (no package creation/validation overhead)
+  - Testing Control: Flexible test execution - can skip tests in sandboxes for faster iterations
+  - Environment Management: Support for aliasified folders and text replacements
+  - Destructive Changes: Full support for pre and post-destructive changes
+  - Metadata Coverage: Supports all metadata types, including those not supported by unlocked packages
+  - No Version Constraints: No need to manage package versions at the platform level
+  - Quick Fixes: Can deploy hotfixes immediately without package creation
+  - Development Flexibility: Easier to refactor and reorganize code
+
+  ### Source Package Disadvantages
+  - No Component Locking: Salesforce org is unaware of package boundaries
+  - No Platform Validation: Dependencies are not validated by Salesforce
+  - No Automated Rollback: Cannot easily rollback to previous versions
+  - Manual Destructive Changes: Must be explicitly managed through pre/post-destructive folders
+  - No Package Lifecycle: No built-in versioning, upgrade, or deprecation paths
+  - Dependency Risks: Dependencies only validated at deployment time
+  - Production Risk: Higher risk of deployment failures in production
+
+  ### Advanced Features (sfp-pro)
+
+  #### Environment-Specific Configuration
+  Source packages in sfp-pro support two powerful mechanisms for managing environment-specific differences:
+
+  1. Aliasified Packages: Deploy different metadata variants based on org aliases
+     Example structure:
+     src-env-specific/
+     └── main/
+         ├── default/        # Fallback for sandboxes
+         ├── dev/           # Dev-specific metadata
+         └── prod/          # Production metadata
+
+  2. Text Replacements: Replace configuration values during deployment without file duplication
+     Example: API endpoints that differ between environments
+
+  #### Destructive Changes Support
+  Source packages fully support destructive changes through dedicated folders:
+  - pre-destructive/: Components deleted before deployment
+  - post-destructive/: Components deleted after deployment
+
+  ### Data Packages Overview
+  Data packages use the SFDMU plugin to create versioned artifacts of Salesforce object records in CSV format. They are primarily intended for record-based configuration of managed packages such as CPQ, Vlocity (Salesforce Industries), and nCino.
+
+  Key benefits:
+  - Ability to skip the package if already installed
+  - Versioned Artifact for traceability
+  - Orchestration by sfpowerscripts
+
+  ### Diff Packages Overview
+  A diff package is a variant of source package where the contents only contain components that are changed. It's generated by computing a git diff against a baseline set in the Dev Hub Org.
+
+  Key characteristics:
+  - Mimics a Change Set model
+  - Always an incremental package
+  - Cannot be rolled back (must roll forward with fixes)
+  - Least consistent package type
+  - Should only be used for transitioning to modular development
+  - Doesn't work with scratch orgs (sandboxes only)
+
+  Consider these package type characteristics when making your analysis and recommendations.
+

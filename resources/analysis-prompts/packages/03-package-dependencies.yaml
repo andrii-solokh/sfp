@@ -1,0 +1,58 @@
+name: "Package Dependencies & Relationships"
+order: 3
+content: |
+  IMPORTANT FORMATTING RULES:
+  - Start with ### (h3) for your main section headers, not # (h1) or ## (h2)
+  - Use #### (h4) for subsections
+  - Do NOT include introductory phrases like "Based on my analysis..." or "I can now provide..."
+  - Start directly with the content without preamble
+  - Be direct and professional in tone
+  - The report is  an additional part of the previous report that is provided to you. 
+  - Do not repeat any information that has already been provided in the previous report. Focus only on the architectural analysis and insights.
+  - DO NOT provide effort esitmation , just focus on the analysis and findings.  Do not proivide investment justification
+  or talk about investments or RoI in this report. Do not refer to Resource Requiremnts etc.. Keep it concise
+
+
+  Analyze the dependencies and relationships for the package "{{packageName}}" (Type: {{packageType}}).
+
+  Review the package's dependencies based on its type:
+
+  For unlocked packages:
+  - List all declared dependencies and their versions
+  - Identify any circular or complex dependency chains
+  - Assess version compatibility and upgrade paths
+  - Check for unnecessary or redundant dependencies
+  - Note if this is an org-dependent package and its implications
+
+  For source packages:
+  - Identify implicit dependencies on other packages or components
+  - Review any hard-coded references to other packages
+  - Assess the coupling level with other parts of the system
+
+  For data packages:
+  - Identify data dependencies and load order requirements
+  - Review relationships with other data packages
+
+  For diff packages:
+  - Analyze what this package depends on for its changes
+  - Review baseline requirements
+
+  ## Cross-Package References
+  - Identify all references to components in other packages
+  - Review permission sets that span multiple packages
+  - Analyze shared custom objects or fields
+  - Check for cross-package workflow or process dependencies
+
+  ## Integration Points
+  - External system dependencies
+  - API dependencies and callouts
+  - Event-driven integrations (Platform Events, Change Data Capture)
+  - Middleware or integration platform dependencies
+
+  ## Deployment Order Implications
+  - Determine the correct deployment sequence
+  - Identify any pre-deployment requirements
+  - Note any post-deployment configuration needs
+
+
+  Provide specific examples and actionable recommendations for improving package independence and maintainability.

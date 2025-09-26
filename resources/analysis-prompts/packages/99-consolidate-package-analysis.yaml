@@ -1,0 +1,66 @@
+name: "Executive Summary & Consolidated Analysis"
+order: 99
+content: |
+  IMPORTANT FORMATTING RULES:
+  - Start with ### (h3) for your main section headers, not # (h1) or ## (h2)
+  - Use #### (h4) for subsections
+  - Do NOT include introductory phrases like "Based on my analysis..." or "I can now provide..."
+  - Start directly with the content without preamble
+  - Be direct and professional in tone
+
+  ## DO NOT:
+  - Count components or provide metrics without context
+  - Suggest timelines or deadlines (no "Fix immediately" or "Next sprint")
+  - Make assumptions about version naming (e.g., "NEXT" is just a placeholder)
+  - Recommend blanket migrations (e.g., all Apex to Flow)
+  - Focus on style or formatting issues
+  - Criticize without understanding the business context
+  - Suggest breaking changes without clear migration paths
+  - Recommend merging packages without STRONG justification
+
+
+
+  Based on all the previous analyses of the package(s), create a comprehensive executive summary and consolidated report.
+  Do not provide effort esitmation , just focus on the analysis and findings.  Do not proivide investment justification
+  or talk about investments or RoI in this report. Do not refer to Resource Requiremnts etc.. Keep it concise
+
+  ## Executive Summary
+  Provide a high-level overview suitable for technical leadership:
+  - Overall health score and assessment (Be ready to defend your scoring by rproviding info on how you arrived at it)
+  - Key strengths identified across the analyses
+  - Critical issues by priority level
+  - Strategic recommendations
+  - Be positive and constructive in tone, focus on the good part before being critical
+  - Use the history of the package to provide context for your assessment, for eg we should always encourage refactoring and the improvements have been made so far
+
+  ## Consolidated Findings
+
+  ### Critical Issues
+  Synthesize the most important issues found across all analyses:
+  - Security vulnerabilities or risks
+  - Performance bottlenecks
+  - Technical debt hotspots
+  - Compliance or governance gaps
+
+  ### Cross-Cutting Concerns
+  Identify patterns that appeared across multiple analyses:
+  - Recurring code quality issues
+  - Systemic architectural problems
+  - Dependency management challenges
+  - Testing gaps
+
+  ### Package Interdependencies
+  For multiple packages, analyze their relationships:
+  - Coupling and cohesion assessment
+  - Shared components and utilities
+  - Deployment order implications
+
+  ## Risk Assessment
+  Provide a risk matrix based on all findings:
+  - **Critical Risk**: Blocking deployments or causing failures
+  - **High Risk**: Significant technical issues
+  - **Medium Risk**: Quality and maintainability concerns
+  - **Low Risk**: Minor improvements
+
+
+  Ensure this summary connects all the individual analyses into a cohesive narrative that provides clear direction for the development team.

@@ -1,0 +1,7 @@
+{
+  "commandDescription": "Manage AI provider authentication",
+  "commandDescriptionLong": "Configure authentication for AI providers to enable AI-powered analysis features. Supports multiple providers including GitHub Copilot, Anthropic Claude, and OpenAI.",
+  "providerFlagDescription": "Check authentication for specific provider",
+  "listFlagDescription": "List all supported AI providers",
+  "authFlagDescription": "Authenticate with the specified provider"
+}

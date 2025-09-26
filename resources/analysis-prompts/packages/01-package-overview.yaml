@@ -1,0 +1,64 @@
+name: "Package Overview"
+order: 1
+content: |
+  IMPORTANT FORMATTING RULES:
+  - Start with ### (h3) for your main section headers, not # (h1) or ## (h2)
+  - Use #### (h4) for subsections
+  - Do NOT include introductory phrases like "Based on my analysis..." or "I can now provide..."
+  - Start directly with the content without preamble
+  - Be direct and professional in tone
+
+  IMPORTANT ANALYSIS GUIDELINES:
+  - State only what you can verify from the codebase
+  - Do NOT make assumptions about version naming conventions (e.g., "NEXT" is just a placeholder value, not indicative of active development)
+  - Do NOT infer project maturity from version numbers alone
+  - To assess package maturity and development activity, use git commands like:
+    - `git log --oneline -n 20 {{packagePath}}` to see recent commits
+    - `git log --since="3 months ago" --oneline {{packagePath}} | wc -l` to count recent changes
+    - `git log --format="%an" {{packagePath}} | sort | uniq -c | sort -rn | head -5` to see top contributors
+  - Focus on actual code structure, patterns, and quality metrics
+
+  Analyze the package "{{packageName}}" located at {{packagePath}}.
+
+  This is a {{packageType}} package in a Flxbl-based Salesforce project.
+
+  ## Context: Packages in the Flxbl/sfp Framework
+
+  In Flxbl/sfp projects, packages are the fundamental units of modular Salesforce development:
+  - **Domain Membership**: Packages are organized into domains representing business capabilities
+  - **Team Ownership**: Each package typically has clear team ownership and boundaries
+  - **Deployment Units**: Packages are independently versioned, built, and deployed artifacts
+  - **Dependency Management**: Packages declare explicit dependencies on other packages
+  - **Lifecycle Management**: Packages progress through validation, building, and release stages
+
+  Package organization principles in Flxbl:
+  - **Small, focused packages are preferred** - easier to maintain, test, and deploy
+  - Packages should have high cohesion (related functionality together)
+  - Packages should have low coupling (minimal dependencies)
+  - Packages within a domain should work together to deliver business capability
+  - Package boundaries should align with team boundaries and deployment needs
+  - **More packages is better than fewer** - Flxbl optimizes deployment at the domain level
+  - Each package is essentially a deployable folder that can be selectively included
+
+  Provide a comprehensive overview that includes:
+
+  ## Package Summary
+  - Purpose and primary functionality of this package
+  - Key business capabilities it provides
+  - Its role within the larger Salesforce implementation
+
+  ## Evolution & history
+  -  Analysis of the package's evolution over time
+  -  Key milestones in its development
+  -  Recent activity levels (e.g., commits in the last 3 months)
+  -  Notable contributors and their impact
+  -  Understand the history to assess maturity and stability
+
+  ## Architecture & Design
+  - Component organization within the package
+  - Key architectural patterns used
+  - Integration points with other packages or systems
+  - Metadata type distribution
+
+
+  
