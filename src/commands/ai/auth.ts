@@ -3,28 +3,12 @@ import { Messages } from '@salesforce/core';
 import { Flags } from '@oclif/core';
 import SfpCommand from '../../SfpCommand';
 import { loglevel } from '../../flags/sfdxflags';
-import { AUTH_PROVIDERS } from '../../impl/agentic/opencode/auth/AuthManager';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as os from 'os';
-import { OpencodeCliChecker } from '../../core/utils/OpencodeCliChecker';
-const chalk = require('chalk');
-const inquirer = require('inquirer').default;
+import { AIAuthService } from '../../impl/ai/auth/AIAuthService';
+import inquirer from 'inquirer';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'ai_auth');
 
 export default class AIAuth extends SfpCommand {
-    private authFilePath: string;
-
-    constructor(argv: string[], config: any) {
-        super(argv, config);
-        // Store auth in ~/.sfp/ai-auth.json
-        const homeDir = os.homedir();
-        const sfpDir = path.join(homeDir, '.sfp');
-        this.authFilePath = path.join(sfpDir, 'ai-auth.json');
-        fs.ensureDirSync(sfpDir);
-    }
     public static description = 'Manage AI provider authentication for report generation';
     public static enableJsonFlag = true;
 
@@ -39,7 +23,6 @@ export default class AIAuth extends SfpCommand {
         ...SfpCommand.flags,
         provider: Flags.string({
             description: 'Check authentication for specific provider',
-            options: Object.keys(AUTH_PROVIDERS),
         }),
         list: Flags.boolean({
             description: 'List all supported providers',
@@ -54,6 +37,7 @@ export default class AIAuth extends SfpCommand {
 
     public async execute(): Promise<void> {
         const { flags } = await this.parse(AIAuth);
+        const authService = new AIAuthService();
 
         // Validate auth flag requires provider
         if (flags.auth && !flags.provider) {
@@ -62,191 +46,173 @@ export default class AIAuth extends SfpCommand {
         }
 
         if (flags.list) {
-            this.listProviders();
+            await this.listProviders(authService);
             return;
         }
 
         if (flags.provider) {
             if (flags.auth) {
-                await this.authenticateProvider(flags.provider);
+                await this.authenticateProvider(authService, flags.provider);
             } else {
-                await this.checkProviderAuth(flags.provider);
+                await this.checkProviderAuth(authService, flags.provider);
             }
         } else {
-            await this.showAuthStatus();
+            await this.showAuthStatus(authService);
         }
     }
 
-    private listProviders(): void {
-        console.log('\n' + chalk.bold('Supported AI Providers:'));
-        console.log(chalk.gray('─'.repeat(50)));
+    private async listProviders(authService: AIAuthService): Promise<void> {
+        const providers = authService.getAllProviders();
 
-        for (const [id, provider] of Object.entries(AUTH_PROVIDERS)) {
-            const icon = this.getProviderIcon(id);
-            console.log(`${icon} ${chalk.cyan(provider.name)} (${chalk.gray(id)})`);
+        SFPLogger.log('\nSupported AI Providers:', LoggerLevel.INFO);
+        SFPLogger.log('─'.repeat(50), LoggerLevel.INFO);
+
+        for (const provider of providers) {
+            const icon = provider.icon || '📦';
+            SFPLogger.log(`${icon} ${provider.name} (${provider.id})`, LoggerLevel.INFO);
 
             if (provider.env.length > 0) {
-                console.log(`   Environment: ${provider.env.join(', ')}`);
+                SFPLogger.log(`   Environment: ${provider.env.join(', ')}`, LoggerLevel.INFO);
             }
 
             if (provider.plugin) {
-                console.log(`   ${chalk.green('✓')} OAuth authentication available`);
+                SFPLogger.log(`   ✓ OAuth authentication available`, LoggerLevel.INFO);
             }
         }
 
-        console.log('\n' + chalk.gray('Use --provider <name> to check specific provider authentication'));
+        SFPLogger.log('\nUse --provider <name> to check specific provider authentication', LoggerLevel.INFO);
     }
 
-    private async checkProviderAuth(providerId: string): Promise<void> {
-        const provider = AUTH_PROVIDERS[providerId];
+    private async checkProviderAuth(authService: AIAuthService, providerId: string): Promise<void> {
+        const status = await authService.getProviderStatus(providerId);
 
-        if (!provider) {
-            SFPLogger.log(`Unknown provider: ${providerId}`, LoggerLevel.ERROR);
-            return;
+        if (!status) {
+            return; // Error already logged by service
         }
 
-        const icon = this.getProviderIcon(providerId);
-        console.log('\n' + chalk.bold(`${icon} ${provider.name} Authentication Status`));
-        console.log(chalk.gray('─'.repeat(50)));
+        SFPLogger.log(`\n${status.icon} ${status.name} Authentication Status`, LoggerLevel.INFO);
+        SFPLogger.log('─'.repeat(50), LoggerLevel.INFO);
 
-        // Check environment variables
-        let hasAuth = false;
-        if (provider.env.length > 0) {
-            console.log('\n' + chalk.yellow('Environment Variables:'));
-            for (const envVar of provider.env) {
-                const isSet = !!process.env[envVar];
-                hasAuth = hasAuth || isSet;
-                const status = isSet ? chalk.green('✓ Set') : chalk.red('✗ Not set');
-                console.log(`  ${envVar}: ${status}`);
+        // Show environment variables
+        if (status.envVars && status.envVars.length > 0) {
+            SFPLogger.log('\nEnvironment Variables:', LoggerLevel.INFO);
+            for (const envVar of status.envVars) {
+                const statusText = envVar.isSet ? '✓ Set' : '✗ Not set';
+                SFPLogger.log(`  ${envVar.name}: ${statusText}`, LoggerLevel.INFO);
+            }
+
+            // Show warnings if any
+            if (status.warnings && status.warnings.length > 0) {
+                for (const warning of status.warnings) {
+                    SFPLogger.log(`  ⚠ ${warning}`, LoggerLevel.WARN);
+                }
             }
         }
 
-        // Check stored credentials
-        const storedAuth = await this.getStoredAuth(providerId);
-        if (storedAuth && !hasAuth) {
-            console.log('\n' + chalk.yellow('Stored Credentials:'));
-            console.log(`  ${chalk.green('✓')} Authentication saved`);
-            hasAuth = true;
+        // Show stored credentials
+        if (status.hasStoredAuth) {
+            SFPLogger.log('\nStored Credentials:', LoggerLevel.INFO);
+            SFPLogger.log('  ✓ Authentication saved', LoggerLevel.INFO);
         }
 
         // Show OAuth availability
-        if (provider.plugin) {
-            console.log('\n' + chalk.yellow('OAuth Support:'));
-            console.log(`  ${chalk.green('✓')} OAuth authentication available`);
+        const provider = authService.getProvider(providerId);
+        if (provider?.plugin) {
+            SFPLogger.log('\nOAuth Support:', LoggerLevel.INFO);
+            SFPLogger.log('  ✓ OAuth authentication plugin available', LoggerLevel.INFO);
+
             if (provider.plugin === 'anthropic') {
-                console.log(`  Supports Claude Pro/Max free API access`);
+                SFPLogger.log('  Supports Claude Pro/Max free API access', LoggerLevel.INFO);
+                SFPLogger.log('  To authenticate: Install opencode-anthropic-auth plugin', LoggerLevel.INFO);
             } else if (provider.plugin === 'copilot') {
-                console.log(`  Supports GitHub Copilot authentication`);
+                SFPLogger.log('  Supports GitHub Copilot authentication', LoggerLevel.INFO);
+                SFPLogger.log('  To authenticate: Install opencode-copilot-auth plugin', LoggerLevel.INFO);
             }
         }
 
         // Summary
-        console.log('\n' + chalk.bold('Status:'));
-        if (hasAuth) {
-            console.log(chalk.green('  ✓ Ready to use'));
+        SFPLogger.log('\nStatus:', LoggerLevel.INFO);
+        if (status.configured) {
+            SFPLogger.log('  ✓ Ready to use', LoggerLevel.INFO);
         } else {
-            console.log(chalk.red('  ✗ Authentication required'));
-            console.log('\n' + chalk.yellow('To authenticate:'));
-            if (provider.env.length > 0) {
-                console.log(`  1. Set environment variable: export ${provider.env[0]}=<your-api-key>`);
+            SFPLogger.log('  ✗ Authentication required', LoggerLevel.ERROR);
+            SFPLogger.log('\nTo authenticate:', LoggerLevel.INFO);
+
+            if (status.envVars && status.envVars.length > 0) {
+                if (providerId === 'amazon-bedrock') {
+                    SFPLogger.log('  1. Set environment variables: export AWS_BEARER_TOKEN_BEDROCK=<token> AWS_REGION=<region>', LoggerLevel.INFO);
+                } else {
+                    SFPLogger.log(`  1. Set environment variable: export ${status.envVars[0].name}=<your-api-key>`, LoggerLevel.INFO);
+                }
             }
-            if (provider.plugin) {
-                console.log(`  2. Or use OAuth: sfp ai auth --provider ${providerId} --auth`);
+
+            if (provider?.plugin) {
+                SFPLogger.log(`  2. Or use OAuth: sfp ai auth --provider ${providerId} --auth`, LoggerLevel.INFO);
             }
+        }
+
+        if (this.jsonEnabled()) {
+            SFPLogger.log(JSON.stringify(status, null, 2), LoggerLevel.INFO);
         }
     }
 
-    private async showAuthStatus(): Promise<void> {
-        console.log('\n' + chalk.bold('AI Provider Authentication Status'));
-        console.log(chalk.gray('─'.repeat(50)));
+    private async showAuthStatus(authService: AIAuthService): Promise<void> {
+        const statuses = await authService.getAllProvidersStatus();
 
-        const statuses: Array<{ provider: string; name: string; status: string; icon: string }> = [];
+        SFPLogger.log('\nAI Provider Authentication Status', LoggerLevel.INFO);
+        SFPLogger.log('─'.repeat(50), LoggerLevel.INFO);
 
-        for (const [id, provider] of Object.entries(AUTH_PROVIDERS)) {
-            let hasAuth = false;
-
-            // Check environment variables
-            if (provider.env.length > 0) {
-                hasAuth = provider.env.some(envVar => !!process.env[envVar]);
-            }
-
-            // Also check stored credentials
-            if (!hasAuth) {
-                const storedAuth = await this.getStoredAuth(id);
-                hasAuth = !!storedAuth;
-            }
-
-            const icon = this.getProviderIcon(id);
-            statuses.push({
-                provider: id,
-                name: provider.name,
-                status: hasAuth ? chalk.green('✓ Configured') : chalk.gray('- Not configured'),
-                icon,
-            });
+        for (const status of statuses) {
+            const statusText = status.configured ? '✓ Configured' : '- Not configured';
+            SFPLogger.log(`${status.icon} ${status.name.padEnd(20)} ${statusText}`, LoggerLevel.INFO);
         }
 
-        // Display table
-        for (const { icon, name, status } of statuses) {
-            console.log(`${icon} ${chalk.cyan(name.padEnd(20))} ${status}`);
+        SFPLogger.log('\nUse --list for detailed information', LoggerLevel.INFO);
+        SFPLogger.log('Use --provider <name> to check specific provider', LoggerLevel.INFO);
+
+        if (this.jsonEnabled()) {
+            SFPLogger.log(JSON.stringify(statuses, null, 2), LoggerLevel.INFO);
         }
-
-        console.log('\n' + chalk.gray('Use --list for detailed information'));
-        console.log(chalk.gray('Use --provider <name> to check specific provider'));
     }
 
-    private getProviderIcon(providerId: string): string {
-        const icons: Record<string, string> = {
-            'anthropic': '🤖',
-            'github-copilot': '🐙'
-        };
-        return icons[providerId] || '📦';
-    }
-
-    private async authenticateProvider(providerId: string): Promise<void> {
-        const provider = AUTH_PROVIDERS[providerId];
+    private async authenticateProvider(authService: AIAuthService, providerId: string): Promise<void> {
+        const provider = authService.getProvider(providerId);
 
         if (!provider) {
             SFPLogger.log(`Unknown provider: ${providerId}`, LoggerLevel.ERROR);
             return;
         }
 
-        const icon = this.getProviderIcon(providerId);
-        console.log('\n' + chalk.bold(`${icon} Authenticating with ${provider.name}`));
-        console.log(chalk.gray('─'.repeat(50)));
+        SFPLogger.log(`\n${provider.icon} Authenticating with ${provider.name}`, LoggerLevel.INFO);
+        SFPLogger.log('─'.repeat(50), LoggerLevel.INFO);
 
         // Check if already authenticated
-        let hasAuth = false;
-        if (provider.env.length > 0) {
-            hasAuth = provider.env.some(envVar => !!process.env[envVar]);
-        }
-
-        if (hasAuth) {
-            console.log(chalk.green('\n✓ Already authenticated via environment variable'));
+        if (await authService.hasAuth(providerId)) {
+            SFPLogger.log('\n✓ Already authenticated via environment variable', LoggerLevel.INFO);
             return;
         }
 
-        // Handle OAuth authentication
+        // Handle OAuth or prompt for credentials
         if (provider.plugin) {
             try {
-                await this.performOAuthAuthentication(providerId, provider);
+                // Perform OAuth authentication directly in the command
+                const success = await this.performOAuthAuthentication(authService, providerId, provider);
+                if (!success) {
+                    SFPLogger.log('\nFalling back to API key authentication...', LoggerLevel.INFO);
+                    await this.promptForCredentials(authService, providerId);
+                }
             } catch (error) {
-                SFPLogger.log(`Authentication failed: ${error.message}`, LoggerLevel.ERROR);
+                SFPLogger.log(`OAuth authentication failed: ${error.message}`, LoggerLevel.ERROR);
+                SFPLogger.log('\nFalling back to API key authentication...', LoggerLevel.INFO);
+                await this.promptForCredentials(authService, providerId);
             }
         } else {
-            // For providers without OAuth, prompt for API key
-            await this.promptForApiKey(providerId, provider);
+            await this.promptForCredentials(authService, providerId);
         }
     }
 
-    private async performOAuthAuthentication(providerId: string, provider: any): Promise<void> {
-        console.log('\n' + chalk.yellow('Starting OAuth authentication...'));
-
-        // Check if OpenCode CLI is installed before attempting OAuth
-        if (!OpencodeCliChecker.checkAndWarn('OAuth authentication')) {
-            console.log(chalk.yellow('\nFalling back to API key authentication...'));
-            await this.promptForApiKey(providerId, provider);
-            return;
-        }
+    private async performOAuthAuthentication(authService: AIAuthService, providerId: string, provider: any): Promise<boolean> {
+        SFPLogger.log('\nStarting OAuth authentication...', LoggerLevel.INFO);
 
         // Start OpenCode server for OAuth flow
         let server: any;
@@ -305,12 +271,12 @@ export default class AIAuth extends SfpCommand {
                 const authorize = await method.authorize();
 
                 if (authorize.url) {
-                    console.log('\n' + chalk.bold('Please authenticate:'));
-                    console.log(chalk.cyan('Go to: ') + authorize.url);
+                    SFPLogger.log('\nPlease authenticate:', LoggerLevel.INFO);
+                    SFPLogger.log(`Go to: ${authorize.url}`, LoggerLevel.INFO);
                 }
 
                 if (authorize.instructions) {
-                    console.log(chalk.yellow(authorize.instructions));
+                    SFPLogger.log(authorize.instructions, LoggerLevel.INFO);
                 }
 
                 if (authorize.method === 'code') {
@@ -328,14 +294,15 @@ export default class AIAuth extends SfpCommand {
                             path: { id: providerId },
                             body: result
                         });
-                        await this.saveAuth(providerId, result);
-                        console.log(chalk.green('\n✓ Authentication successful!'));
-                        console.log(chalk.gray(`Credentials saved to ${this.authFilePath}`));
+                        await authService.authenticateProvider(providerId, result);
+                        SFPLogger.log('\n✓ Authentication successful!', LoggerLevel.INFO);
+                        return true;
                     } else {
-                        console.log(chalk.red('\n✗ Authentication failed'));
+                        SFPLogger.log('\n✗ Authentication failed', LoggerLevel.ERROR);
+                        return false;
                     }
                 } else if (authorize.method === 'auto') {
-                    console.log(chalk.gray('\nWaiting for authorization...'));
+                    SFPLogger.log('\nWaiting for authorization...', LoggerLevel.INFO);
                     const result = await authorize.callback();
                     if (result.type === 'success') {
                         // Save to both OpenCode client (for current session) and our persistent storage
@@ -343,16 +310,20 @@ export default class AIAuth extends SfpCommand {
                             path: { id: providerId },
                             body: result
                         });
-                        await this.saveAuth(providerId, result);
-                        console.log(chalk.green('\n✓ Authentication successful!'));
-                        console.log(chalk.gray(`Credentials saved to ${this.authFilePath}`));
+                        await authService.authenticateProvider(providerId, result);
+                        SFPLogger.log('\n✓ Authentication successful!', LoggerLevel.INFO);
+                        return true;
                     } else {
-                        console.log(chalk.red('\n✗ Authentication failed'));
+                        SFPLogger.log('\n✗ Authentication failed', LoggerLevel.ERROR);
+                        return false;
                     }
                 }
             } else if (method.type === 'api') {
-                await this.promptForApiKey(providerId, provider);
+                // Fall back to API key
+                return false;
             }
+
+            return false;
 
         } finally {
             if (server) {
@@ -361,56 +332,58 @@ export default class AIAuth extends SfpCommand {
         }
     }
 
-    private async promptForApiKey(providerId: string, provider: any): Promise<void> {
-        console.log('\n' + chalk.yellow('API Key Authentication'));
+    private async promptForCredentials(authService: AIAuthService, providerId: string): Promise<void> {
+        const provider = authService.getProvider(providerId);
+        if (!provider) return;
 
-        const { apiKey } = await inquirer.prompt([{
-            type: 'password',
-            name: 'apiKey',
-            message: `Enter your ${provider.name} API key:`,
-            validate: (input: string) => input.length > 0 ? true : 'API key is required'
-        }]);
+        SFPLogger.log('\nAPI Key Authentication', LoggerLevel.INFO);
 
-        // Save the API key to our persistent storage
-        await this.saveAuth(providerId, {
-            type: 'api',
-            key: apiKey
-        });
-
-        console.log(chalk.green('\n✓ API key saved successfully!'));
-        console.log(chalk.gray(`Credentials saved to ${this.authFilePath}`));
-        console.log('\nYou can now run your report generation command.');
-    }
-
-    private async saveAuth(providerId: string, auth: any): Promise<void> {
         try {
-            const existing = await this.loadAuthFile();
-            existing[providerId] = auth;
-            await fs.writeJson(this.authFilePath, existing, { spaces: 2 });
-            // Set file permissions to 0o600 (read/write for owner only)
-            await fs.chmod(this.authFilePath, 0o600);
-        } catch (error) {
-            SFPLogger.log(`Failed to save authentication: ${error.message}`, LoggerLevel.ERROR);
-        }
-    }
+            if (providerId === 'amazon-bedrock') {
+                const { bearerToken, region } = await inquirer.prompt([
+                    {
+                        type: 'password',
+                        name: 'bearerToken',
+                        message: 'Enter your AWS Bedrock Bearer Token:',
+                        validate: (input: string) => input.length > 0 ? true : 'Bearer token is required'
+                    },
+                    {
+                        type: 'input',
+                        name: 'region',
+                        message: 'Enter your AWS Region (e.g., us-east-1):',
+                        default: 'us-east-1',
+                        validate: (input: string) => input.length > 0 ? true : 'Region is required'
+                    }
+                ]);
 
-    private async getStoredAuth(providerId: string): Promise<any> {
-        try {
-            const auth = await this.loadAuthFile();
-            return auth[providerId];
-        } catch (error) {
-            return undefined;
-        }
-    }
+                const success = await authService.authenticateProvider(providerId, {
+                    token: bearerToken,
+                    region: region
+                });
 
-    private async loadAuthFile(): Promise<Record<string, any>> {
-        try {
-            if (await fs.pathExists(this.authFilePath)) {
-                return await fs.readJson(this.authFilePath);
+                if (success) {
+                    SFPLogger.log('\n✓ AWS Bedrock credentials saved successfully!', LoggerLevel.INFO);
+                } else {
+                    SFPLogger.log('\n✗ Failed to save credentials', LoggerLevel.ERROR);
+                }
+            } else {
+                const { apiKey } = await inquirer.prompt([{
+                    type: 'password',
+                    name: 'apiKey',
+                    message: `Enter your ${provider.name} API key:`,
+                    validate: (input: string) => input.length > 0 ? true : 'API key is required'
+                }]);
+
+                const success = await authService.authenticateProvider(providerId, { apiKey });
+
+                if (success) {
+                    SFPLogger.log('\n✓ API key saved successfully!', LoggerLevel.INFO);
+                } else {
+                    SFPLogger.log('\n✗ Failed to save API key', LoggerLevel.ERROR);
+                }
             }
         } catch (error) {
-            // File doesn't exist or is corrupted
+            SFPLogger.log(`Authentication failed: ${error.message}`, LoggerLevel.ERROR);
         }
-        return {};
     }
 }

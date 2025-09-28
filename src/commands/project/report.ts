@@ -4,8 +4,9 @@ import { Flags } from '@oclif/core';
 import SfpCommand from '../../SfpCommand';
 import { loglevel } from '../../flags/sfdxflags';
 import { AIReportGenerator } from '../../impl/agentic/opencode/AIReportGenerator';
-import { DEFAULT_PROVIDER, DEFAULT_MODEL } from '../../impl/agentic/opencode';
+import { DEFAULT_PROVIDER } from '../../impl/agentic/opencode';
 import { AUTH_PROVIDERS } from '../../impl/agentic/opencode/auth/AuthManager';
+import { AIAuthService } from '../../impl/ai/auth/AIAuthService';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
@@ -53,7 +54,6 @@ export default class ProjectAnalyze extends SfpCommand {
         }),
         model: Flags.string({
             description: 'Model ID to use (provider-specific)',
-            default: DEFAULT_MODEL,
         }),
         'prompt-count': Flags.integer({
             description: 'Number of prompts to run (useful for testing)',
@@ -68,8 +68,12 @@ export default class ProjectAnalyze extends SfpCommand {
         const project = await SfProject.resolve();
         const projectPath = project.getPath();
 
+        // Get the appropriate default model for the provider if not specified
+        const authService = new AIAuthService();
+        const modelToUse = flags.model || authService.getDefaultModel(flags.provider);
+
         SFPLogger.log(`Starting AI-powered analysis of packages at ${projectPath}`, LoggerLevel.INFO);
-        SFPLogger.log(`Provider: ${flags.provider}, Model: ${flags.model}`, LoggerLevel.INFO);
+        SFPLogger.log(`Provider: ${flags.provider}, Model: ${modelToUse}`, LoggerLevel.INFO);
         SFPLogger.log(`Output will be saved to: ${flags.output}`, LoggerLevel.INFO);
 
         // Check authentication status
@@ -146,7 +150,7 @@ export default class ProjectAnalyze extends SfpCommand {
             const generator = new AIReportGenerator({
                 projectPath,
                 providerId: flags.provider,
-                modelId: flags.model,
+                modelId: modelToUse,
                 promptCount: flags['prompt-count'],
                 packageNames: flags.package,
                 logger: new ConsoleLogger(),

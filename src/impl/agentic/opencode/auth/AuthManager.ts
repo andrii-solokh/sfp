@@ -28,6 +28,18 @@ export const AUTH_PROVIDERS: Record<string, AuthProvider> = {
         env: [],
         plugin: 'copilot',
         requiresAuth: true
+    },
+    openai: {
+        id: 'openai',
+        name: 'OpenAI',
+        env: ['OPENAI_API_KEY'],
+        requiresAuth: true
+    },
+    'amazon-bedrock': {
+        id: 'amazon-bedrock',
+        name: 'Amazon Bedrock',
+        env: ['AWS_BEARER_TOKEN_BEDROCK', 'AWS_REGION'],
+        requiresAuth: true
     }
 };
 
@@ -53,10 +65,20 @@ export class AuthManager {
         if (!provider) return false;
 
         // Check environment variables
-        if (provider.env) {
-            for (const envVar of provider.env) {
-                if (process.env[envVar]) {
+        if (provider.env && provider.env.length > 0) {
+            // For AWS Bedrock, both env vars must be present
+            if (providerId === 'amazon-bedrock') {
+                const hasToken = !!process.env['AWS_BEARER_TOKEN_BEDROCK'];
+                const hasRegion = !!process.env['AWS_REGION'];
+                if (hasToken && hasRegion) {
                     return true;
+                }
+            } else {
+                // For other providers, any env var is sufficient
+                for (const envVar of provider.env) {
+                    if (process.env[envVar]) {
+                        return true;
+                    }
                 }
             }
         }
@@ -84,22 +106,46 @@ export class AuthManager {
         }
 
         // First try environment variables
-        if (provider.env) {
-            for (const envVar of provider.env) {
-                const value = process.env[envVar];
-                if (value) {
+        if (provider.env && provider.env.length > 0) {
+            // Special handling for AWS Bedrock - needs both env vars
+            if (providerId === 'amazon-bedrock') {
+                const token = process.env['AWS_BEARER_TOKEN_BEDROCK'];
+                const region = process.env['AWS_REGION'];
+
+                if (token && region) {
                     try {
                         await this.client.auth.set({
                             path: { id: providerId },
                             body: {
                                 type: 'api',
-                                key: value
+                                key: token,
+                                region: region  // Store region as metadata
                             }
                         });
-                        SFPLogger.log(`✅ Configured ${providerId} authentication from ${envVar}`, LoggerLevel.INFO, this.logger);
+                        SFPLogger.log(`✅ Configured ${providerId} authentication with token and region`, LoggerLevel.INFO, this.logger);
                         return true;
                     } catch (error) {
                         SFPLogger.log(`Failed to set ${providerId} auth: ${error.message}`, LoggerLevel.ERROR, this.logger);
+                    }
+                }
+            } else {
+                // For other providers, use the first available env var
+                for (const envVar of provider.env) {
+                    const value = process.env[envVar];
+                    if (value) {
+                        try {
+                            await this.client.auth.set({
+                                path: { id: providerId },
+                                body: {
+                                    type: 'api',
+                                    key: value
+                                }
+                            });
+                            SFPLogger.log(`✅ Configured ${providerId} authentication from ${envVar}`, LoggerLevel.INFO, this.logger);
+                            return true;
+                        } catch (error) {
+                            SFPLogger.log(`Failed to set ${providerId} auth: ${error.message}`, LoggerLevel.ERROR, this.logger);
+                        }
                     }
                 }
             }
