@@ -76,6 +76,7 @@ export interface ValidateProps {
     orgInfo?: boolean;
     disableSourcePackageOverride?: boolean;
     disableParallelTestExecution?: boolean;
+    skipTesting?: boolean;
 }
 
 export default class ValidateImpl implements PostDeployHook, PreDeployHook {
@@ -291,7 +292,7 @@ export default class ValidateImpl implements PostDeployHook, PreDeployHook {
             waitTime: 120,
             deploymentMode:
                 this.props.disableSourcePackageOverride == true ? DeploymentMode.NORMAL : DeploymentMode.SOURCEPACKAGES,
-            isTestsToBeTriggered: true,
+            isTestsToBeTriggered: !this.props.skipTesting,
             skipIfPackageInstalled: false,
             logsGroupSymbol: this.props.logsGroupSymbol,
             currentStage: Stage.VALIDATE,

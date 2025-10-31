@@ -70,6 +70,10 @@ export default class ValidateAgainstOrg extends SfpCommand {
             description: messages.getMessage('disableParallelTestingFlagDescription'),
             default: false,
         }),
+        skiptesting: Flags.boolean({
+            description: messages.getMessage('skipTestingFlagDescription'),
+            default: false,
+        }),
         loglevel
     };
 
@@ -134,6 +138,7 @@ export default class ValidateAgainstOrg extends SfpCommand {
                 disableArtifactCommit: this.flags.disableartifactupdate,
                 disableSourcePackageOverride: this.flags.disablesourcepkgoverride,
                 disableParallelTestExecution: this.flags.disableparalleltesting,
+                skipTesting: this.flags.skiptesting,
                 orgInfo: this.flags.orginfo,
                 installExternalDependencies: this.flags.installdeps,
             };

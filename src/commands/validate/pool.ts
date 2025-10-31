@@ -84,6 +84,10 @@ export default class ValidateAgainstPool extends SfpCommand {
             description: messages.getMessage('disableParallelTestingFlagDescription'),
             default: false,
         }),
+        skiptesting: Flags.boolean({
+            description: messages.getMessage('skipTestingFlagDescription'),
+            default: false,
+        }),
         disablediffcheck: Flags.boolean({
             description: messages.getMessage('disableDiffCheckFlagDescription'),
             default: false,
@@ -169,6 +173,7 @@ export default class ValidateAgainstPool extends SfpCommand {
                 orgInfo: this.flags.orginfo,
                 disableSourcePackageOverride : this.flags.disablesourcepkgoverride,
                 disableParallelTestExecution: this.flags.disableparalleltesting,
+                skipTesting: this.flags.skiptesting,
                 installExternalDependencies: this.flags.installdeps,
             };
 
