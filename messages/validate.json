@@ -18,5 +18,4 @@
     "disableSourcePackageOverride": "Disables overriding unlocked package installation as source package installation during validate",
     "disableParallelTestingFlagDescription": "Disable test execution in parallel, this will execute apex tests in serial",
     "skipTestingFlagDescription": "Skip all Apex tests during validation"
-    
 }
