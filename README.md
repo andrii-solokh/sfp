@@ -1,8 +1,31 @@
+# ⚠️ End of Life Notice - May 2026
 
-  
+> **sfp Community Edition will be sunset in May 2026.**
+
+Thank you for being part of the flxbl community over the last 6 years. It's been a great experience building this out alongside all of you—starting from an Azure DevOps extension put together in a weekend, to a plugin, and eventually to a CLI. Today we have 300+ orgs using it in their CI/CD workflows.
+
+Over the last 2 years, as we started building sfp pro (initially as a means to sustain the overall project), we didn't anticipate the extent of changes we'd introduce to support developers with an experience that removes the need to pause and ponder—staying in your natural flow. We introduced codev and sfp server. sfp server is rapidly evolving into our vision of "devhub++", with codev providing the visual interface on web/desktop and sfp pro cli providing the CLI interface. We're hoping to promote sfp server and codev from beta to v1 at the beginning of April.
+
+All of this means the architecture has changed drastically—community and pro are now two entirely different codebases. The community edition has to be maintained independently, and to be transparent, we haven't been able to ship new features to the community for a while now. It's also become hard to align documentation across both topologies, creating confusion for organisations upgrading or new to the ecosystem.
+
+We've decided to sunset sfp community edition by May 2026. Issues and PRs are no longer being accepted. The repo will remain available if you want to fork and maintain it internally—see the build instructions below.
+
+Thanks once again for your understanding and all your contributions.
+
+### Timeline
+
+| Date | Milestone |
+|------|-----------|
+| January 2026 | Issues and PR intake closed |
+| Feb - April 2026 | Build instructions and Claude instructions added for users who are forking |
+| Early May 2026 | Repository archived, docs updated to focus on new terminology |
+
+---
+
+
 ```
 
-        
+
          .----------------.  .----------------.  .----------------.
         | .--------------. || .--------------. || .--------------. |
         | |    _______   | || |  _________   | || |   ______     | |
@@ -15,14 +38,13 @@
         | '--------------' || '--------------' || '--------------' |
          '----------------'  '----------------'  '----------------'
 
-                                                                                                               
+
 
 ```
 ![Version](https://img.shields.io/npm/v/@flxbl-io/sfp.svg)
 [![GitHub stars](https://img.shields.io/github/stars/flxbl-io/sfp)](https://gitHub.com/flxbl-io/sfp/stargazers/)
 [![GitHub contributors](https://img.shields.io/github/contributors/flxbl-io/sfp.svg)](https://github.com/flxbl-io/sfp/graphs/contributors/)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/flxbl-io/sfp/blob/main/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 [![DeepScan grade](https://deepscan.io/api/teams/23310/projects/26589/branches/848646/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=23310&pid=26589&bid=848646)
 [![CodeFactor](https://www.codefactor.io/repository/github/flxbl-io/sfp/badge)](https://www.codefactor.io/repository/github/flxbl-io/sfp)
@@ -35,15 +57,15 @@ sfp is an purpose built  cli based tool specifically designed for modular Salesf
 ## Key Aspects of sfp:
 
 - Artifact-Centric Approach: sfp packages Salesforce code and metadata into artifacts, along with deployment details, ensuring consistent deployments and simplified version management across environments.
-- Best-in-Class Mono Repo Support: Offers robust support for mono repositories, facilitating streamlined development, integration, and collaboration 
+- Best-in-Class Mono Repo Support: Offers robust support for mono repositories, facilitating streamlined development, integration, and collaboration
 - Support for Multiple Package Types: sfp accommodates various Salesforce package types with streamlined commands, enabling modular development, independent versioning, and flexible deployment strategies.
 - Orchestrate Across Entire Lifecycle:  sfp provides an extensive set of functionality across the entire lifecycle of your Salesforce development.
 - End-to-End Observability:  sfp is built with comprehensive metrics that are emitted on every commands providing unparalleled visibility into your ALM process.
 Commands
 
-sfp is comprised of a suite of commands to aid in your end to end development cycle for Salesforce.  Starting with the core commands, you are able to perform  basic work flows to to build and deploy artifacts (locally to start, and to a NPM artifact repository after) across environments through the command line.  As you progress in your understanding of the core commands, you can utilized more advanced commands and flags in your CI/CD platform of choice to drive a more complete release process leveraging release definitions, change logs, metrics and much more.  
+sfp is comprised of a suite of commands to aid in your end to end development cycle for Salesforce.  Starting with the core commands, you are able to perform  basic work flows to to build and deploy artifacts (locally to start, and to a NPM artifact repository after) across environments through the command line.  As you progress in your understanding of the core commands, you can utilized more advanced commands and flags in your CI/CD platform of choice to drive a more complete release process leveraging release definitions, change logs, metrics and much more.
 
-sfp is constantly evolving and being driven by the passionate community that has embraced our ways of working.  We have introduced key utility commands over the years to solve pain points specific to the Salesforce Platform.  The commands have been successfully tested and used on large enterprise-scale implementations.  As we continue to grow the toolset, we hope to introduced more commands to address the future wave of challenges. 
+sfp is constantly evolving and being driven by the passionate community that has embraced our ways of working.  We have introduced key utility commands over the years to solve pain points specific to the Salesforce Platform.  The commands have been successfully tested and used on large enterprise-scale implementations.  As we continue to grow the toolset, we hope to introduced more commands to address the future wave of challenges.
 
 
 #### Installing sfp locally
