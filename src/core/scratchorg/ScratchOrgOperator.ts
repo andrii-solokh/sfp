@@ -87,7 +87,7 @@ export default class ScratchOrgOperator {
     private async requestAScratchOrg(alias: string, definitionFile: string, expireIn: Duration, waitTime: Duration, poolConfig: Partial<PoolConfig>) {
         const createCommandOptions: ScratchOrgRequest = {
             durationDays: expireIn.days,
-            nonamespace: false,
+            nonamespace: poolConfig.noNamespace || false,
             noancestors: poolConfig.noAnchestors || false,
             wait: waitTime,
             retry: 3,

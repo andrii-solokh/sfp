@@ -125,6 +125,12 @@
             "type": "boolean",
             "default":false
         },
+        "noNamespace": {
+            "title": "Create scratch org without namespace.",
+            "description": "Set to true to request scratch org creation with no namespace (nonamespace=true).",
+            "type": "boolean",
+            "default":false
+        },
         "fetchArtifacts": {
             "title": "Fetch Artifacts using below mechanism",
             "description": "Fetch artifacts from artifact registry using below mechanism",

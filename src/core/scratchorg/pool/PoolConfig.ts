@@ -36,4 +36,5 @@ export interface PoolConfig {
     failedToCreate?: number;
     maxRetryCount?:number;
     noAnchestors?:boolean;
+    noNamespace?:boolean;
 }
