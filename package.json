@@ -1,7 +1,7 @@
 {
-    "name": "@flxbl-io/sfp",
+    "name": "@andrii-solokh/sfp",
     "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
-    "version": "39.8.0",
+    "version": "39.8.0-andrii.0",
     "license": "MIT",
     "author": "flxblio",
     "release": "August 25",
@@ -9,7 +9,7 @@
         "sfp": "./bin/run",
         "sfpowerscripts": "./bin/run"
     },
-    "bugs": "https://github.com/flxbl-io/sfp/issues",
+    "bugs": "https://github.com/andrii-solokh/sfp/issues",
     "publishConfig": {
         "access": "public"
     },
@@ -109,7 +109,7 @@
         "/resources",
         "/oclif.manifest.json"
     ],
-    "homepage": "https://github.com/flxbl-io/sfp",
+    "homepage": "https://github.com/andrii-solokh/sfp",
     "keywords": [
         "flxblio",
         "sfp-cli",
@@ -182,8 +182,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/flxbl-io/sfp.git",
-        "directory": "packages/sfp-cli"
+        "url": "https://github.com/andrii-solokh/sfp.git"
     },
     "scripts": {
         "prepare": "husky",
