@@ -12,7 +12,7 @@ import { LoggerLevel } from '@flxbl-io/sfp-logger';
 
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'impact_package');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'impact_package');
 
 export default class Package extends SfpCommand {
     public static flags = {

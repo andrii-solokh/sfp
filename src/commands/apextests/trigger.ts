@@ -25,7 +25,7 @@ Messages.importMessagesDirectory(__dirname);
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'trigger_apex_test');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'trigger_apex_test');
 
 export default class TriggerApexTest extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

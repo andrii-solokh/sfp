@@ -1,13 +1,13 @@
 {
     "name": "@andrii-solokh/sfp",
     "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
-    "version": "39.8.0-andrii.1",
+    "version": "39.8.0-andrii.2",
     "license": "MIT",
     "author": "flxblio",
     "release": "August 25",
     "bin": {
-        "sfp": "./bin/run",
-        "sfpowerscripts": "./bin/run"
+        "sfp": "bin/run",
+        "sfpowerscripts": "bin/run"
     },
     "bugs": "https://github.com/andrii-solokh/sfp/issues",
     "publishConfig": {

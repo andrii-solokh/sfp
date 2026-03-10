@@ -15,7 +15,7 @@ import { arrayFlagSfdxStyle, loglevel, orgApiVersionFlagSfdxStyle, requiredUserN
 Messages.importMessagesDirectory(__dirname);
 
 
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'profile_reconcile');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'profile_reconcile');
 
 export default class Reconcile extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

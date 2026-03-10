@@ -18,7 +18,7 @@ import * as fs from 'fs-extra';
 Messages.importMessagesDirectory(__dirname);
 
 
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'org_login_url');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'org_login_url');
 const AUTH_URL_FORMAT = 'force://<clientId>:<clientSecret>:<refreshToken>@<instanceUrl>';
 
 export default class OrgLoginUrl extends SfpCommand {

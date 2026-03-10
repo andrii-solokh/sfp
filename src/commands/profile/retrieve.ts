@@ -12,7 +12,7 @@ import SFPLogger, { COLOR_KEY_MESSAGE, COLOR_WARNING, LoggerLevel } from '@flxbl
 
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'profile_retrieve');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'profile_retrieve');
 
 export default class Retrieve extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

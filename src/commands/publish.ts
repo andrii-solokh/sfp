@@ -27,7 +27,7 @@ import { arrayFlagSfdxStyle, loglevel, logsgroupsymbol, optionalDevHubFlag } fro
 import { Flags } from '@oclif/core';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'publish');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'publish');
 
 export default class Publish extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

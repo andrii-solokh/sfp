@@ -10,7 +10,7 @@ import SFPLogger from '@flxbl-io/sfp-logger';
 import { COLOR_HEADER } from '@flxbl-io/sfp-logger';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'fetch');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'fetch');
 
 export default class Fetch extends SfpCommand {
     public static description = messages.getMessage('commandDescription');
