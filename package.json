@@ -1,7 +1,7 @@
 {
     "name": "@andrii-solokh/sfp",
     "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
-    "version": "39.8.0-andrii.0",
+    "version": "39.8.0-andrii.1",
     "license": "MIT",
     "author": "flxblio",
     "release": "August 25",
@@ -186,6 +186,7 @@
     },
     "scripts": {
         "prepare": "husky",
+        "prepack": "npm run build",
         "watch": "npm run compile -- --watch",
         "build": "npm run clean && npm run compile",
         "docs": "oclif readme --no-aliases --multi --dir=docs --repository-prefix https://github.com/flxbl-io/sfp",
