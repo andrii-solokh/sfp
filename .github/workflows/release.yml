@@ -49,10 +49,10 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           registry-url: 'https://registry.npmjs.org'
 
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
-          token: ${{ secrets.GHA_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
       - run: |
           npm i
@@ -179,5 +179,4 @@ jobs:
       signing_secret: ${{ secrets.SIGNING_SECRET }}
       cosign_password:  ${{ secrets.COSIGN_PASSWORD }}
     needs: [ build-docker-lite ]
-
 

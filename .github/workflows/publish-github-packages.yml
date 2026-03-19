@@ -1,6 +1,9 @@
 name: Publish GitHub Package
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -24,7 +27,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check if version already published
+        id: version_check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          exists="$(
+            gh api "users/andrii-solokh/packages/npm/sfp/versions?per_page=100" \
+              --jq ".[] | select(.name == \"${version}\") | .name" \
+              | head -n 1 || true
+          )"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          if [[ -n "${exists}" ]]; then
+            echo "skip_publish=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${version} is already published. Skipping publish."
+          else
+            echo "skip_publish=false" >> "$GITHUB_OUTPUT"
+            echo "Version ${version} is not published yet. Proceeding."
+          fi
+
       - name: Publish package
+        if: steps.version_check.outputs.skip_publish != 'true'
         run: npm publish --tag andrii --registry https://npm.pkg.github.com
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
