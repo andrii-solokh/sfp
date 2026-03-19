@@ -1,5 +1,12 @@
 # Changelog
 
+## [39.9.1](https://github.com/andrii-solokh/sfp/compare/v39.9.0...v39.9.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* align oclif message bundle namespace ([66d4576](https://github.com/andrii-solokh/sfp/commit/66d4576f2d7c0eecdca7d26da73b9142ebf64252))
+
 ## [39.9.0](https://github.com/andrii-solokh/sfp/compare/v39.8.0...v39.9.0) (2026-03-19)
 
 
