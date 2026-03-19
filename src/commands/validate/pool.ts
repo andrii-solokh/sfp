@@ -11,7 +11,7 @@ import { Flags } from '@oclif/core';
 import { LoggerLevel } from '@flxbl-io/sfp-logger';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'validate');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'validate');
 
 export default class ValidateAgainstPool extends SfpCommand {
     static aliases = ['orchestrator:validate', 'validate']

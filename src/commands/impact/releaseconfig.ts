@@ -13,7 +13,7 @@ const Table = require('cli-table');
 
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'impact_release_config');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'impact_release_config');
 
 export default class ReleaseConfig extends SfpCommand {
     public static flags = {

@@ -6,7 +6,7 @@ import { Flags } from '@oclif/core';
 import { loglevel } from '../../flags/sfdxflags';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'releasedefinition_generate');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'releasedefinition_generate');
 
 export default class Generate extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

@@ -24,7 +24,7 @@ import { Flags } from '@oclif/core';
 import { loglevel, logsgroupsymbol, targetdevhubusername } from '../../flags/sfdxflags';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'prepare');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'prepare');
 
 export default class Prepare extends SfpCommand {
 

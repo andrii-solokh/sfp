@@ -11,7 +11,7 @@ import { Flags } from '@oclif/core';
 
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'validateAgainstOrg');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'validateAgainstOrg');
 
 export default class ValidateAgainstOrg extends SfpCommand {
     static aliases = ['orchestrator:validateagainstorg', 'validateAgainstOrg']

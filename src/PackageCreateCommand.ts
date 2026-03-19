@@ -12,7 +12,7 @@ import { Flags } from '@oclif/core';
 import { loglevel } from './flags/sfdxflags';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'create-package');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'create-package');
 
 export default abstract class PackageCreateCommand extends SfpCommand {
     protected static requiresUsername = false;

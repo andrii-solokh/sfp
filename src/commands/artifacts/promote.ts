@@ -14,7 +14,7 @@ import { COLOR_HEADER } from '@flxbl-io/sfp-logger';
 import SFPLogger from '@flxbl-io/sfp-logger';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'promote');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'promote');
 
 export default class Promote extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

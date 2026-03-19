@@ -26,7 +26,7 @@ export const orgApiVersionFlagSfdxStyle = orgApiVersionFlag({
 });
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'core-messages');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'core-messages');
 
 export const loglevel = Flags.string({
   description: 'logging level for this command invocation',

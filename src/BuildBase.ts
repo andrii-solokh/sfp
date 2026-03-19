@@ -32,7 +32,7 @@ Messages.importMessagesDirectory(__dirname);
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'build');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'build');
 
 export default abstract class BuildBase extends SfpCommand {
     protected static requiresUsername = false;

@@ -12,7 +12,7 @@ import { Flags } from '@oclif/core';
 
 Messages.importMessagesDirectory(__dirname);
 
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'profile_merge');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'profile_merge');
 
 export default class Merge extends SfpCommand {
     public static description = messages.getMessage('commandDescription');

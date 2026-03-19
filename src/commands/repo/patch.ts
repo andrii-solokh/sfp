@@ -21,7 +21,7 @@ import { Flags } from '@oclif/core';
 import { arrayFlagSfdxStyle, loglevel, logsgroupsymbol } from '../../flags/sfdxflags';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@flxbl-io/sfp', 'patch');
+const messages = Messages.loadMessages('@andrii-solokh/sfp', 'patch');
 
 export default class Patch extends SfpCommand {
     public static description = messages.getMessage('commandDescription');
