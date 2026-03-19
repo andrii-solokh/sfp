@@ -48,6 +48,17 @@ jobs:
             echo "Version ${version} is not published yet. Proceeding."
           fi
 
+      - name: Build distributable artifacts
+        if: steps.version_check.outputs.skip_publish != 'true'
+        run: |
+          npm run build
+          npm run manifest
+
+      - name: Verify package contents
+        if: steps.version_check.outputs.skip_publish != 'true'
+        run: |
+          npm pack --dry-run
+
       - name: Publish package
         if: steps.version_check.outputs.skip_publish != 'true'
         run: npm publish --tag andrii --registry https://npm.pkg.github.com
